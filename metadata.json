@@ -1,0 +1,6 @@
+{
+  "name": "Simulado OAB FGV",
+  "description": "Plataforma completa de simulados para o Exame de Ordem da OAB com histórico de provas da banca FGV, 80 questões estruturadas, cronômetro oficial e gabarito comentado com fundamentação legal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
