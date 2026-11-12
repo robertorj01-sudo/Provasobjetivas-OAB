@@ -1,6 +1,7 @@
 import React from 'react';
 import { Scale, Clock, Pause, Play, BookOpen, History, BookmarkCheck, FileCode, RotateCcw, ZoomIn, ZoomOut, CheckCircle } from 'lucide-react';
 import { SimuladoMode } from '../types/oab';
+import { JurisTantumLogo } from './JurisTantumLogo';
 
 interface NavbarProps {
   activeTab: 'simulado' | 'treino' | 'historico' | 'erros' | 'arquitetura';
@@ -61,20 +62,14 @@ export function Navbar({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo / Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('simulado')}>
-            <div className="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center shadow-sm shadow-amber-600/20">
-              <Scale className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-slate-900 text-lg tracking-tight">Simulado OAB</span>
-                <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200">
-                  FGV Oficial
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 hidden sm:block">1ª Fase • 80 Questões • Corte: 40 Acertos</p>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('simulado')}
+            aria-label="Juris Tantum — Ir para o simulado principal"
+            className="text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 rounded-xl shrink-0"
+          >
+            <JurisTantumLogo variant="horizontal" size="md" showTagline={true} />
+          </button>
 
           {/* Center: Timer & Mode indicator when in Simulado */}
           <div className="flex items-center gap-3">

@@ -92,41 +92,56 @@ export const apiService = {
         )
       );
 
+      const disciplineMap = new Map<
+        Question['discipline'],
+        { total: number; correct: number; wrong: number; unanswered: number }
+      >();
+
+      for (const dist of OAB_OFFICIAL_DISTRIBUTION) {
+        disciplineMap.set(dist.discipline, { total: 0, correct: 0, wrong: 0, unanswered: 0 });
+      }
+
       let correct = 0;
       let wrong = 0;
       let unanswered = 0;
 
-      const disciplineScores = OAB_OFFICIAL_DISTRIBUTION.map(dist => {
-        const dQuestions = targetQuestions.filter(q => q.discipline === dist.discipline);
-        let dCorrect = 0;
-        let dWrong = 0;
-        let dUnanswered = 0;
+      for (const q of targetQuestions) {
+        const stats = disciplineMap.get(q.discipline) || { total: 0, correct: 0, wrong: 0, unanswered: 0 };
+        stats.total += 1;
 
-        for (const q of dQuestions) {
-          const ans = userAnswers[q.id];
-          if (!ans) {
-            dUnanswered++;
-            unanswered++;
-          } else if (ans === q.correctOption) {
-            dCorrect++;
-            correct++;
-          } else {
-            dWrong++;
-            wrong++;
-          }
+        const ans = userAnswers[q.id];
+        if (!ans) {
+          stats.unanswered += 1;
+          unanswered++;
+        } else if (ans === q.correctOption) {
+          stats.correct += 1;
+          correct++;
+        } else {
+          stats.wrong += 1;
+          wrong++;
         }
+        disciplineMap.set(q.discipline, stats);
+      }
 
-        return {
-          discipline: dist.discipline,
-          total: dQuestions.length,
-          correct: dCorrect,
-          wrong: dWrong,
-          unanswered: dUnanswered,
-          percentage: dQuestions.length > 0 ? Math.round((dCorrect / dQuestions.length) * 100) : 0,
-        };
-      });
+      const disciplineScores = Array.from(disciplineMap.entries())
+        .filter(([, val]) => val.total > 0)
+        .map(([discipline, val]) => ({
+          discipline,
+          total: val.total,
+          correct: val.correct,
+          wrong: val.wrong,
+          unanswered: val.unanswered,
+          percentage: Math.round((val.correct / val.total) * 100),
+        }));
 
-      const sorted = [...disciplineScores].sort((a, b) => b.percentage - a.percentage);
+      const sortedDesc = [...disciplineScores].sort((a, b) =>
+        b.percentage !== a.percentage ? b.percentage - a.percentage : b.correct - a.correct
+      );
+      const sortedAsc = [...disciplineScores].sort((a, b) =>
+        a.percentage !== b.percentage ? a.percentage - b.percentage : (b.wrong + b.unanswered) - (a.wrong + a.unanswered)
+      );
+
+      const denominator = targetQuestions.length || 80;
 
       return {
         totalQuestions: targetQuestions.length,
@@ -134,12 +149,12 @@ export const apiService = {
         correctCount: correct,
         wrongCount: wrong,
         unansweredCount: unanswered,
-        scorePercentage: Math.round((correct / 80) * 100),
+        scorePercentage: Math.round((correct / denominator) * 100),
         isApproved: correct >= 40,
         timeSpentSeconds,
         disciplineScores,
-        strongestDisciplines: sorted.slice(0, 3).map(s => s.discipline),
-        weakestDisciplines: sorted.slice(-3).reverse().map(s => s.discipline),
+        strongestDisciplines: sortedDesc.slice(0, 3).map(s => s.discipline),
+        weakestDisciplines: sortedAsc.slice(0, 3).map(s => s.discipline),
       };
     }
   },

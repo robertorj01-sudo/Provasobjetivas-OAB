@@ -61,13 +61,7 @@ async function startServer() {
 
     let source = getAllQuestions();
     if (exam && exam !== 'all') {
-      if (exam === 'oab-47' || exam.includes('47')) {
-        source = EXAM_47_FULL_QUESTIONS;
-      } else if (exam === 'oab-41' || exam.includes('41')) {
-        source = FULL_MOCK_EXAM_80;
-      } else {
-        source = source.filter(q => q.examOrigin.toLowerCase().includes(exam.toLowerCase()));
-      }
+      source = getExamQuestions(exam);
     }
 
     let filtered = [...source];
@@ -156,22 +150,29 @@ async function startServer() {
 
     const disciplineScores: DisciplineScore[] = [];
     disciplineMap.forEach((val, key) => {
-      disciplineScores.push({
-        discipline: key,
-        total: val.total,
-        correct: val.correct,
-        wrong: val.wrong,
-        unanswered: val.unanswered,
-        percentage: val.total > 0 ? Math.round((val.correct / val.total) * 100) : 0,
-      });
+      if (val.total > 0) {
+        disciplineScores.push({
+          discipline: key,
+          total: val.total,
+          correct: val.correct,
+          wrong: val.wrong,
+          unanswered: val.unanswered,
+          percentage: Math.round((val.correct / val.total) * 100),
+        });
+      }
     });
 
     const isApproved = correctCount >= 40; // OAB official 50% cutoff
-    const scorePercentage = Math.round((correctCount / 80) * 100);
+    const scorePercentage = targetQuestions.length > 0 ? Math.round((correctCount / targetQuestions.length) * 100) : 0;
 
-    const sortedByPerc = [...disciplineScores].sort((a, b) => b.percentage - a.percentage);
-    const strongestDisciplines = sortedByPerc.slice(0, 3).map(d => d.discipline);
-    const weakestDisciplines = sortedByPerc.slice(-3).reverse().map(d => d.discipline);
+    const sortedDesc = [...disciplineScores].sort((a, b) =>
+      b.percentage !== a.percentage ? b.percentage - a.percentage : b.correct - a.correct
+    );
+    const sortedAsc = [...disciplineScores].sort((a, b) =>
+      a.percentage !== b.percentage ? a.percentage - b.percentage : (b.wrong + b.unanswered) - (a.wrong + a.unanswered)
+    );
+    const strongestDisciplines = sortedDesc.slice(0, 3).map(d => d.discipline);
+    const weakestDisciplines = sortedAsc.slice(0, 3).map(d => d.discipline);
 
     const result: SimuladoResult = {
       totalQuestions: targetQuestions.length,

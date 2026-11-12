@@ -147,15 +147,8 @@ export default function App() {
   // Switch active full exam directly
   const handleSwitchExam = (examId: string) => {
     setActiveExamId(examId);
-    if (examId === 'oab-47') {
-      setExamTitle('47º Exame de Ordem Unificado (Tipo 1 - Branca)');
-    } else if (examId === 'oab-46') {
-      setExamTitle('46º Exame de Ordem Unificado (Tipo 1 - Branca)');
-    } else if (examId === 'oab-45') {
-      setExamTitle('45º Exame de Ordem Unificado (Tipo 1 - Branca)');
-    } else {
-      setExamTitle('41º Exame de Ordem Unificado (Banca FGV)');
-    }
+    const found = AVAILABLE_EXAMS.find(e => e.id === examId);
+    setExamTitle(found ? found.name : 'Simulado OAB FGV');
     setActiveQuestions(getExamQuestions(examId));
     setCurrentIndex(0);
     setUserAnswers({});
@@ -189,6 +182,8 @@ export default function App() {
         ? 'oab-46'
         : examName.includes('45')
         ? 'oab-45'
+        : examName.includes('44')
+        ? 'oab-44'
         : 'oab-41');
     setActiveExamId(resolvedId);
     setExamTitle(examName);
@@ -308,46 +303,19 @@ export default function App() {
                   </button>
                 ) : (
                   <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto bg-slate-100 p-1 rounded-xl">
-                    <button
-                      onClick={() => handleSwitchExam('oab-47')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        activeExamId === 'oab-47'
-                          ? 'bg-amber-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      47º Exame
-                    </button>
-                    <button
-                      onClick={() => handleSwitchExam('oab-46')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        activeExamId === 'oab-46'
-                          ? 'bg-amber-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      46º Exame
-                    </button>
-                    <button
-                      onClick={() => handleSwitchExam('oab-45')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        activeExamId === 'oab-45'
-                          ? 'bg-amber-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      45º Exame
-                    </button>
-                    <button
-                      onClick={() => handleSwitchExam('oab-41')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        activeExamId === 'oab-41'
-                          ? 'bg-amber-600 text-white shadow-xs'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      41º Exame
-                    </button>
+                    {AVAILABLE_EXAMS.map((exam) => (
+                      <button
+                        key={exam.id}
+                        onClick={() => handleSwitchExam(exam.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          activeExamId === exam.id
+                            ? 'bg-amber-600 text-white shadow-xs'
+                            : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {exam.edition}º Exame
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
