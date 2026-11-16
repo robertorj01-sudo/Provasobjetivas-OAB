@@ -30,11 +30,11 @@ export function ExamCatalogView({ onStartExam }: ExamCatalogViewProps) {
           <span className="text-xs font-bold uppercase tracking-wider">Histórico Oficial de Certames</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-          Provas da Banca FGV (Exames 47, 46, 45, 44, 43, 42, 41, 40, 39, 38 e Histórico Completo)
+          Provas da Banca FGV (Exames 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35 e Histórico Completo)
         </h1>
         <p className="mt-2 text-slate-600 text-sm sm:text-base max-w-3xl leading-relaxed">
           A Fundação Getulio Vargas (FGV) assumiu a realização do Exame de Ordem Unificado em 2010.
-          Pratique com os cadernos oficiais, incluindo os cadernos completos do <strong>47º</strong>, <strong>46º</strong>, <strong>45º</strong>, <strong>44º</strong>, <strong>43º</strong>, <strong>42º</strong>, <strong>40º</strong>, <strong>39º</strong> e <strong>38º Exame de Ordem Unificado</strong> com todas as 80 questões gabaritadas e comentadas pedagogicamente.
+          Pratique com os cadernos oficiais, incluindo os cadernos completos do <strong>47º</strong>, <strong>46º</strong>, <strong>45º</strong>, <strong>44º</strong>, <strong>43º</strong>, <strong>42º</strong>, <strong>40º</strong>, <strong>39º</strong>, <strong>38º</strong>, <strong>37º</strong>, <strong>36º</strong> e <strong>35º Exame de Ordem Unificado</strong> com todas as 80 questões gabaritadas e comentadas pedagogicamente.
         </p>
 
         {/* Filter bar */}
@@ -43,7 +43,7 @@ export function ExamCatalogView({ onStartExam }: ExamCatalogViewProps) {
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Buscar por edição (ex: 47º, 46º, 45º, 44º, 43º, 42º, 41º, 40º, 39º, 38º) ou tema..."
+              placeholder="Buscar por edição (ex: 47º, 46º, 45º, 44º, 43º, 42º, 41º, 40º, 39º, 38º, 37º, 36º, 35º) ou tema..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"

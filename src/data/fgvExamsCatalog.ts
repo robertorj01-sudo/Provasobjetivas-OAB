@@ -153,7 +153,7 @@ export const FGV_EXAMS_CATALOG: ExamMetadata[] = [
     officialDate: '26/02/2023',
     status: 'Gabarito Oficial',
     passRatePercentage: 26.5,
-    description: 'Última edição antes da expansão de novas disciplinas na grade da OAB/FGV.',
+    description: 'Última edição antes da expansão de novas disciplinas na grade da OAB/FGV: caderno oficial Tipo 1 (Branca) aplicado em 26/02/2023 com as 80 questões completas, gabarito definitivo oficial, análise do gabarito, fundamentação jurídica e pegadinhas da FGV.',
   },
   {
     id: 'oab-36',
@@ -167,7 +167,7 @@ export const FGV_EXAMS_CATALOG: ExamMetadata[] = [
     officialDate: '23/10/2022',
     status: 'Gabarito Oficial',
     passRatePercentage: 25.2,
-    description: 'Enfâse em prerrogativas do advogado e alterações recentes no Estatuto da Advocacia (Lei 14.365/2022).',
+    description: 'Ênfase em prerrogativas do advogado e alterações do Estatuto da Advocacia (Lei 14.365/2022): caderno oficial Tipo 1 (Branca) aplicado em 23/10/2022 com as 80 questões completas, gabarito definitivo oficial, análise do gabarito, fundamentação jurídica e pegadinhas da FGV.',
   },
   {
     id: 'oab-35',
@@ -181,7 +181,7 @@ export const FGV_EXAMS_CATALOG: ExamMetadata[] = [
     officialDate: '03/07/2022',
     status: 'Gabarito Oficial',
     passRatePercentage: 24.8,
-    description: 'Exame de alta densidade doutrinária em Direito Civil (Contratos e Responsabilidade Civil).',
+    description: 'Exame de alta densidade doutrinária em Direito Civil (Contratos e Responsabilidade Civil): caderno oficial Tipo 1 (Branca) aplicado em 03/07/2022 com as 80 questões completas, gabarito definitivo oficial, análise do gabarito, fundamentação jurídica e pegadinhas da FGV.',
   },
   {
     id: 'oab-34',

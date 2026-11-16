@@ -9,6 +9,9 @@ import { EXAM_42_FULL_QUESTIONS } from './exam42/exam42_full';
 import { EXAM_40_FULL_QUESTIONS } from './exam40/exam40_full';
 import { EXAM_39_FULL_QUESTIONS } from './exam39/exam39_full';
 import { EXAM_38_FULL_QUESTIONS } from './exam38/exam38_full';
+import { EXAM_37_FULL_QUESTIONS } from './exam37/exam37_full';
+import { EXAM_36_FULL_QUESTIONS } from './exam36/exam36_full';
+import { EXAM_35_FULL_QUESTIONS } from './exam35/exam35_full';
 
 export interface AvailableExamInfo {
   id: string;
@@ -110,6 +113,33 @@ export const AVAILABLE_EXAMS: AvailableExamInfo[] = [
     description: 'Caderno oficial do 38º Exame da FGV (09/07/2023) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questões anuladas 45, 60 e 62), comentários pedagógicos e pegadinhas da banca.',
     isNew: true,
   },
+  {
+    id: 'oab-37',
+    name: '37º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 37,
+    year: 2023,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 37º Exame da FGV (26/02/2023) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questões anuladas 7 e 69), comentários pedagógicos e pegadinhas da banca.',
+    isNew: true,
+  },
+  {
+    id: 'oab-36',
+    name: '36º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 36,
+    year: 2022,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 36º Exame da FGV (23/10/2022) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questões anuladas 50 e 51), comentários pedagógicos e pegadinhas da banca.',
+    isNew: true,
+  },
+  {
+    id: 'oab-35',
+    name: '35º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 35,
+    year: 2022,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 35º Exame da FGV (03/07/2022) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questões anuladas 50 e 59), comentários pedagógicos e pegadinhas da banca.',
+    isNew: true,
+  },
 ];
 
 export const getExamQuestions = (examId: string): Question[] => {
@@ -140,6 +170,15 @@ export const getExamQuestions = (examId: string): Question[] => {
   if (examId === 'oab-38' || examId.includes('38')) {
     return EXAM_38_FULL_QUESTIONS;
   }
+  if (examId === 'oab-37' || examId.includes('37')) {
+    return EXAM_37_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-36' || examId.includes('36')) {
+    return EXAM_36_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-35' || examId.includes('35')) {
+    return EXAM_35_FULL_QUESTIONS;
+  }
   return FULL_MOCK_EXAM_80;
 };
 
@@ -154,6 +193,9 @@ export const getAllQuestions = (): Question[] => {
     ...EXAM_40_FULL_QUESTIONS,
     ...EXAM_39_FULL_QUESTIONS,
     ...EXAM_38_FULL_QUESTIONS,
+    ...EXAM_37_FULL_QUESTIONS,
+    ...EXAM_36_FULL_QUESTIONS,
+    ...EXAM_35_FULL_QUESTIONS,
     ...FULL_MOCK_EXAM_80,
   ];
 };
@@ -178,6 +220,9 @@ export const findQuestionByIdAnyExam = (id: number): Question | undefined => {
     EXAM_40_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_39_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_38_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_37_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_36_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_35_FULL_QUESTIONS.find((q) => q.id === id) ||
     FULL_MOCK_EXAM_80.find((q) => q.id === id)
   );
 };
