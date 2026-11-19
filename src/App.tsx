@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Navbar } from './components/Navbar';
+import { useState, useEffect } from 'react';
+import { Navbar, MainTabId } from './components/Navbar';
 import { QuestionCard } from './components/QuestionCard';
 import { SimuladoControls } from './components/SimuladoControls';
 import { AnswerMatrixDrawer } from './components/AnswerMatrixDrawer';
@@ -8,15 +8,21 @@ import { ExamCatalogView } from './components/ExamCatalogView';
 import { DisciplinePickerView } from './components/DisciplinePickerView';
 import { ErrorNotebookView } from './components/ErrorNotebookView';
 import { ArchitectureDocsView } from './components/ArchitectureDocsView';
-import { FULL_MOCK_EXAM_80 } from './data/mockExam80';
+import { CommunityFeedView } from './components/CommunityFeedView';
+import { PublicProfileView } from './components/PublicProfileView';
+import { EditProfileModal } from './components/EditProfileModal';
+import { CommunityProvider, useCommunity } from './context/CommunityContext';
+import { SharedRevisionList } from './types/community';
 import { EXAM_47_FULL_QUESTIONS } from './data/exam47/exam47_full';
 import { getExamQuestions, getAllQuestions, AVAILABLE_EXAMS } from './data/examsRegistry';
 import { Question, OptionLetter, SimuladoMode, SimuladoResult, DisciplineType } from './types/oab';
 import { apiService } from './services/api';
-import { AlertTriangle, CheckCircle, HelpCircle, Layers, Award } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'simulado' | 'treino' | 'historico' | 'erros' | 'arquitetura'>('simulado');
+function JurisTantumApp() {
+  const { recordCompletedSimulado, setFeedFilterDiscipline } = useCommunity();
+
+  const [activeTab, setActiveTab] = useState<MainTabId>('simulado');
   const [mode, setMode] = useState<SimuladoMode>('real');
   const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
 
@@ -142,6 +148,7 @@ export default function App() {
     const timeSpent = 18000 - timeRemainingSeconds;
     const computedResult = await apiService.submitSimulado(userAnswers, timeSpent, activeExamId, activeQuestions);
     setResult(computedResult);
+    recordCompletedSimulado(computedResult, examTitle);
   };
 
   // Switch active full exam directly
@@ -174,17 +181,8 @@ export default function App() {
 
   // Start specific exam from catalog
   const handleStartExamFromCatalog = (examName: string, examId?: string) => {
-    const resolvedId =
-      examId ||
-      (examName.includes('47')
-        ? 'oab-47'
-        : examName.includes('46')
-        ? 'oab-46'
-        : examName.includes('45')
-        ? 'oab-45'
-        : examName.includes('44')
-        ? 'oab-44'
-        : 'oab-41');
+    const matchedExam = AVAILABLE_EXAMS.find((e) => examName.includes(String(e.edition)));
+    const resolvedId = examId || matchedExam?.id || 'oab-41';
     setActiveExamId(resolvedId);
     setExamTitle(examName);
     setActiveQuestions(getExamQuestions(resolvedId));
@@ -210,6 +208,53 @@ export default function App() {
     }
   };
 
+  // Navigate directly to any question from Feed, Profile, or Notifications
+  const handleOpenQuestionById = (questionId: number) => {
+    const idxInActive = activeQuestions.findIndex((q) => q.id === questionId);
+    if (idxInActive !== -1) {
+      setCurrentIndex(idxInActive);
+      setIsFinished(false);
+      setActiveTab('simulado');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    for (const exam of AVAILABLE_EXAMS) {
+      const questions = getExamQuestions(exam.id);
+      const foundIdx = questions.findIndex((q) => q.id === questionId);
+      if (foundIdx !== -1) {
+        setActiveExamId(exam.id);
+        setExamTitle(exam.name);
+        setActiveQuestions(questions);
+        setCurrentIndex(foundIdx);
+        setIsFinished(false);
+        setResult(null);
+        setActiveTab('simulado');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    }
+  };
+
+  // Practice a shared revision list from a user's Public Profile
+  const handlePracticeSharedList = (list: SharedRevisionList) => {
+    const all = getAllQuestions();
+    let matched = all.filter((q) => list.questionIds.includes(q.id));
+    if (matched.length === 0) {
+      matched = all.filter((q) => q.discipline === list.discipline).slice(0, 15);
+    }
+    if (matched.length > 0) {
+      setExamTitle(`Lista de Revisão: ${list.title}`);
+      setActiveQuestions(matched);
+      setCurrentIndex(0);
+      setIsFinished(false);
+      setResult(null);
+      setMode('study');
+      setActiveTab('simulado');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   // Update question dynamically (e.g. from JSON import)
   const handleUpdateQuestion = (updated: Question) => {
     setActiveQuestions((prev) =>
@@ -221,7 +266,8 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Avoid firing when user is typing in an input
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) return;
+      if (activeTab !== 'simulado' || isFinished) return;
 
       if (e.key === 'ArrowRight' && currentIndex < activeQuestions.length - 1) {
         setCurrentIndex((prev) => prev + 1);
@@ -240,7 +286,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, activeQuestions.length, isFinished]);
+  }, [currentIndex, activeQuestions.length, isFinished, activeTab]);
 
   const answeredCount = Object.keys(userAnswers).length;
   const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
@@ -265,6 +311,7 @@ export default function App() {
         onResetSimulado={handleResetExam}
         isFinished={isFinished}
         bookmarkedCount={bookmarkedCount}
+        onOpenQuestion={handleOpenQuestionById}
       />
 
       {/* Main Content by Tab */}
@@ -355,6 +402,7 @@ export default function App() {
                   fontSize={fontSize}
                   questionNumberOverride={currentQuestion.number}
                   onUpdateQuestion={handleUpdateQuestion}
+                  onNavigateToFeed={() => setActiveTab('comunidade')}
                 />
 
                 {/* Controls Bar */}
@@ -398,7 +446,17 @@ export default function App() {
           />
         )}
 
-        {/* Tab 5: Arquitetura e Instalação */}
+        {/* Tab 5: Comunidade & Feed Jurídico */}
+        {activeTab === 'comunidade' && (
+          <CommunityFeedView
+            onOpenQuestion={handleOpenQuestionById}
+            onSyncBookmarkQuestion={(qId) =>
+              setBookmarkedQuestions((prev) => ({ ...prev, [qId]: true }))
+            }
+          />
+        )}
+
+        {/* Tab 6: Arquitetura e Instalação */}
         {activeTab === 'arquitetura' && <ArchitectureDocsView />}
       </main>
 
@@ -455,6 +513,25 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* JusBrasil-style Public Profile Overlay & Edit Profile Modal */}
+      <PublicProfileView
+        onOpenQuestion={handleOpenQuestionById}
+        onSelectDisciplineInFeed={(disc) => {
+          setFeedFilterDiscipline(disc);
+          setActiveTab('comunidade');
+        }}
+        onPracticeSharedList={handlePracticeSharedList}
+      />
+      <EditProfileModal />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <CommunityProvider>
+      <JurisTantumApp />
+    </CommunityProvider>
   );
 }

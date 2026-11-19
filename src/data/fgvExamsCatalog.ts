@@ -195,7 +195,7 @@ export const FGV_EXAMS_CATALOG: ExamMetadata[] = [
     officialDate: '20/02/2022',
     status: 'Gabarito Oficial',
     passRatePercentage: 28.1,
-    description: 'Forte presença de temas de Direitos Fundamentais e Controle de Constitucionalidade.',
+    description: 'Forte presença de temas de Direitos Fundamentais e Controle de Constitucionalidade: caderno oficial Tipo 1 (Branca) aplicado em 20/02/2022 com as 80 questões completas, gabarito definitivo oficial (incluindo questão anulada 63), análise do gabarito, fundamentação jurídica e pegadinhas da FGV.',
   },
   {
     id: 'oab-33',
@@ -209,7 +209,7 @@ export const FGV_EXAMS_CATALOG: ExamMetadata[] = [
     officialDate: '17/10/2021',
     status: 'Gabarito Oficial',
     passRatePercentage: 19.4,
-    description: 'Um dos exames mais desafiadores da história recente da banca FGV.',
+    description: 'Um dos exames mais desafiadores da história recente da banca FGV: caderno oficial Tipo 2 (Verde) aplicado em 17/10/2021 com as 80 questões completas, gabarito definitivo oficial (incluindo questão anulada 61), análise do gabarito, fundamentação jurídica e pegadinhas da FGV.',
   },
   {
     id: 'oab-32',

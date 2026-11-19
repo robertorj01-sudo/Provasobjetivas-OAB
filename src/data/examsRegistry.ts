@@ -12,6 +12,8 @@ import { EXAM_38_FULL_QUESTIONS } from './exam38/exam38_full';
 import { EXAM_37_FULL_QUESTIONS } from './exam37/exam37_full';
 import { EXAM_36_FULL_QUESTIONS } from './exam36/exam36_full';
 import { EXAM_35_FULL_QUESTIONS } from './exam35/exam35_full';
+import { EXAM_34_FULL_QUESTIONS } from './exam34/exam34_full';
+import { EXAM_33_FULL_QUESTIONS } from './exam33/exam33_full';
 
 export interface AvailableExamInfo {
   id: string;
@@ -140,6 +142,24 @@ export const AVAILABLE_EXAMS: AvailableExamInfo[] = [
     description: 'Caderno oficial do 35º Exame da FGV (03/07/2022) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questões anuladas 50 e 59), comentários pedagógicos e pegadinhas da banca.',
     isNew: true,
   },
+  {
+    id: 'oab-34',
+    name: '34º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 34,
+    year: 2022,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 34º Exame da FGV (20/02/2022) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questão anulada 63), comentários pedagógicos e pegadinhas da banca.',
+    isNew: true,
+  },
+  {
+    id: 'oab-33',
+    name: '33º Exame de Ordem Unificado (Tipo 2 - Verde)',
+    edition: 33,
+    year: 2021,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 33º Exame da FGV (17/10/2021) Tipo 2 Verde com as 80 questões completas, gabarito definitivo oficial (incluindo questão anulada 61), comentários pedagógicos e pegadinhas da banca.',
+    isNew: true,
+  },
 ];
 
 export const getExamQuestions = (examId: string): Question[] => {
@@ -179,6 +199,12 @@ export const getExamQuestions = (examId: string): Question[] => {
   if (examId === 'oab-35' || examId.includes('35')) {
     return EXAM_35_FULL_QUESTIONS;
   }
+  if (examId === 'oab-34' || examId.includes('34')) {
+    return EXAM_34_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-33' || examId.includes('33')) {
+    return EXAM_33_FULL_QUESTIONS;
+  }
   return FULL_MOCK_EXAM_80;
 };
 
@@ -196,6 +222,8 @@ export const getAllQuestions = (): Question[] => {
     ...EXAM_37_FULL_QUESTIONS,
     ...EXAM_36_FULL_QUESTIONS,
     ...EXAM_35_FULL_QUESTIONS,
+    ...EXAM_34_FULL_QUESTIONS,
+    ...EXAM_33_FULL_QUESTIONS,
     ...FULL_MOCK_EXAM_80,
   ];
 };
@@ -223,6 +251,8 @@ export const findQuestionByIdAnyExam = (id: number): Question | undefined => {
     EXAM_37_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_36_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_35_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_34_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_33_FULL_QUESTIONS.find((q) => q.id === id) ||
     FULL_MOCK_EXAM_80.find((q) => q.id === id)
   );
 };
