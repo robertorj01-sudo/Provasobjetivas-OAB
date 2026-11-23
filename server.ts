@@ -162,7 +162,8 @@ async function startServer() {
       }
     });
 
-    const isApproved = correctCount >= 40; // OAB official 50% cutoff
+    const passingCutoff = Math.ceil((targetQuestions.length || 80) * 0.5);
+    const isApproved = correctCount >= passingCutoff; // OAB official 50% cutoff
     const scorePercentage = targetQuestions.length > 0 ? Math.round((correctCount / targetQuestions.length) * 100) : 0;
 
     const sortedDesc = [...disciplineScores].sort((a, b) =>

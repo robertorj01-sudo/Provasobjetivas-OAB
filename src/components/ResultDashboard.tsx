@@ -265,6 +265,7 @@ export function ResultDashboard({
 
   const chartHeight = Math.max(360, chartData.length * 32 + 48);
   const totalExamQuestions = result.totalQuestions || questions.length || 80;
+  const passingTarget = Math.ceil(totalExamQuestions * 0.5);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -285,15 +286,15 @@ export function ResultDashboard({
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight text-balance">
-          {result.isApproved ? 'Aprovado na 1ª Fase da OAB!' : 'Continue treinando para os 40 pontos'}
+          {result.isApproved ? 'Aprovado na 1ª Fase da OAB!' : `Continue treinando para os ${passingTarget} pontos`}
         </h1>
 
         <p className="mt-3 text-slate-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
           {result.isApproved
-            ? `Excelente resultado! Você atingiu ${result.correctCount} acertos, superando a nota de corte oficial da banca FGV (40 acertos de ${totalExamQuestions} questões). Você estaria apto para a 2ª Fase!`
-            : `Você atingiu ${result.correctCount} de ${totalExamQuestions} pontos (${result.scorePercentage}%). Para a aprovação oficial da OAB/FGV são necessários 40 acertos (50%). Faltaram ${Math.max(
+            ? `Excelente resultado! Você atingiu ${result.correctCount} acertos, superando a nota de corte oficial da banca FGV (${passingTarget} acertos de ${totalExamQuestions} questões). Você estaria apto para a 2ª Fase!`
+            : `Você atingiu ${result.correctCount} de ${totalExamQuestions} pontos (${result.scorePercentage}%). Para a aprovação oficial da OAB/FGV são necessários ${passingTarget} acertos (50%). Faltaram ${Math.max(
                 0,
-                40 - result.correctCount
+                passingTarget - result.correctCount
               )} acerto(s). Use o painel de estatísticas abaixo para identificar onde ganhar pontos rapidamente.`}
         </p>
 

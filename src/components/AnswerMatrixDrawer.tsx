@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { X, CheckCircle, Flag, HelpCircle, Layers } from 'lucide-react';
-import { Question, OptionLetter } from '../types/oab';
-import { OAB_OFFICIAL_DISTRIBUTION } from '../data/oabOfficialDistributions';
+import { Question, OptionLetter, DisciplineType } from '../types/oab';
 
 interface AnswerMatrixDrawerProps {
   isOpen: boolean;
@@ -34,6 +33,26 @@ export function AnswerMatrixDrawer({
   const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
   const unansweredCount = questions.length - answeredCount;
 
+  const disciplineGroups = useMemo(() => {
+    const groups: Array<{ discipline: DisciplineType; items: Question[]; minNum: number; maxNum: number }> = [];
+    const map = new Map<DisciplineType, Question[]>();
+    for (const q of questions) {
+      const existing = map.get(q.discipline);
+      if (existing) {
+        existing.push(q);
+      } else {
+        const list = [q];
+        map.set(q.discipline, list);
+        groups.push({ discipline: q.discipline, items: list, minNum: q.number, maxNum: q.number });
+      }
+    }
+    for (const g of groups) {
+      g.minNum = Math.min(...g.items.map((item) => item.number));
+      g.maxNum = Math.max(...g.items.map((item) => item.number));
+    }
+    return groups;
+  }, [questions]);
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/50 backdrop-blur-xs transition-opacity">
       <div className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
@@ -41,7 +60,7 @@ export function AnswerMatrixDrawer({
         <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Cartão de Respostas</h2>
-            <p className="text-xs text-slate-500">Navegue pelas 80 questões da 1ª Fase OAB</p>
+            <p className="text-xs text-slate-500">Navegue pelas {questions.length} questões da 1ª Fase OAB</p>
           </div>
           <button
             onClick={onClose}
@@ -63,7 +82,7 @@ export function AnswerMatrixDrawer({
                   : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
               }`}
             >
-              <div className="text-base font-extrabold">{answeredCount}/80</div>
+              <div className="text-base font-extrabold">{answeredCount}/{questions.length}</div>
               <div className="text-[10px] uppercase font-semibold">Respondidas</div>
             </button>
 
@@ -111,10 +130,8 @@ export function AnswerMatrixDrawer({
 
         {/* Grid of questions */}
         <div className="flex-1 overflow-y-auto p-5 space-y-6">
-          {OAB_OFFICIAL_DISTRIBUTION.map((dist) => {
-            const distQuestions = questions.filter(
-              q => q.number >= dist.questionRange[0] && q.number <= dist.questionRange[1]
-            );
+          {disciplineGroups.map((group) => {
+            const distQuestions = group.items;
 
             // Filter logic
             const visibleQuestions = distQuestions.filter(q => {
@@ -128,19 +145,19 @@ export function AnswerMatrixDrawer({
             if (visibleQuestions.length === 0) return null;
 
             return (
-              <div key={dist.discipline} className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200">
+              <div key={group.discipline} className="bg-slate-50/70 p-3.5 rounded-xl border border-slate-200">
                 <div className="flex items-center justify-between mb-2.5">
                   <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-amber-700" />
-                    {dist.discipline}
+                    {group.discipline}
                   </span>
                   <span className="text-[10px] font-semibold text-slate-500">
-                    Q{dist.questionRange[0]} a Q{dist.questionRange[1]}
+                    {group.minNum === group.maxNum ? `Q${group.minNum}` : `Q${group.minNum} a Q${group.maxNum}`}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
-                  {distQuestions.map((q) => {
+                  {visibleQuestions.map((q) => {
                     const qIndex = questions.findIndex(item => item.id === q.id);
                     const isCurrent = qIndex === currentIndex;
                     const ans = userAnswers[q.id];

@@ -142,6 +142,7 @@ export const apiService = {
       );
 
       const denominator = targetQuestions.length || 80;
+      const passingCutoff = Math.ceil(denominator * 0.5);
 
       return {
         totalQuestions: targetQuestions.length,
@@ -150,7 +151,7 @@ export const apiService = {
         wrongCount: wrong,
         unansweredCount: unanswered,
         scorePercentage: Math.round((correct / denominator) * 100),
-        isApproved: correct >= 40,
+        isApproved: correct >= passingCutoff,
         timeSpentSeconds,
         disciplineScores,
         strongestDisciplines: sortedDesc.slice(0, 3).map(s => s.discipline),

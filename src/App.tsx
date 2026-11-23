@@ -181,7 +181,9 @@ function JurisTantumApp() {
 
   // Start specific exam from catalog
   const handleStartExamFromCatalog = (examName: string, examId?: string) => {
-    const matchedExam = AVAILABLE_EXAMS.find((e) => examName.includes(String(e.edition)));
+    const matchedExam = AVAILABLE_EXAMS.find(
+      (e) => (e.id === 'oab-02' && examName.includes('2010.2')) || examName.includes(String(e.edition))
+    );
     const resolvedId = examId || matchedExam?.id || 'oab-41';
     setActiveExamId(resolvedId);
     setExamTitle(examName);
@@ -292,6 +294,11 @@ function JurisTantumApp() {
   const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
   const bookmarkedCount = Object.values(bookmarkedQuestions).filter(Boolean).length;
   const currentQuestion = activeQuestions[currentIndex];
+  const isFullCatalogExam =
+    (activeQuestions.length === 80 || activeQuestions.length === 100) &&
+    !examTitle.startsWith('Treino Direcionado') &&
+    !examTitle.startsWith('Lista de Revisão');
+  const passingCutoff = Math.ceil(activeQuestions.length * 0.5);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100/70 text-slate-900 font-sans">
@@ -325,9 +332,9 @@ function JurisTantumApp() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-extrabold uppercase tracking-wider">
-                      {activeQuestions.length === 80 ? 'Caderno Oficial 80 Questões' : 'Treino Filtrado'}
+                      {isFullCatalogExam ? `Caderno Oficial ${activeQuestions.length} Questões` : 'Treino Filtrado'}
                     </span>
-                    {(activeExamId === 'oab-47' || activeExamId === 'oab-46' || activeExamId === 'oab-45') && activeQuestions.length === 80 && (
+                    {(activeExamId === 'oab-47' || activeExamId === 'oab-46' || activeExamId === 'oab-45') && isFullCatalogExam && (
                       <span className="px-2 py-0.5 rounded bg-emerald-600 text-white text-[10px] font-extrabold uppercase tracking-wider">
                         {activeExamId === 'oab-47' ? 'EXAME 47 OFICIAL' : activeExamId === 'oab-46' ? 'EXAME 46 OFICIAL' : 'EXAME 45 OFICIAL'}
                       </span>
@@ -337,11 +344,11 @@ function JurisTantumApp() {
                     {examTitle}
                   </h1>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Banca FGV • 80 Questões com 4 Alternativas (A, B, C, D) • Corte: 40 Acertos (50%)
+                    Banca FGV • {activeQuestions.length} Questões com 4 Alternativas (A, B, C, D) • Corte: {passingCutoff} Acertos (50%)
                   </p>
                 </div>
 
-                {activeQuestions.length !== 80 ? (
+                {!isFullCatalogExam ? (
                   <button
                     onClick={() => handleSwitchExam('oab-47')}
                     className="self-start sm:self-auto text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 px-3.5 py-2 rounded-xl transition-colors"
@@ -360,7 +367,7 @@ function JurisTantumApp() {
                             : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
-                        {exam.edition}º Exame
+                        {exam.id === 'oab-02' ? '2010.2 (II)' : `${exam.edition}º Exame`}
                       </button>
                     ))}
                   </div>
