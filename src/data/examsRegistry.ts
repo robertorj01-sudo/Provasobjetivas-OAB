@@ -17,7 +17,15 @@ import { EXAM_33_FULL_QUESTIONS } from './exam33/exam33_full';
 import { EXAM_32_FULL_QUESTIONS } from './exam32/exam32_full';
 import { EXAM_31_FULL_QUESTIONS } from './exam31/exam31_full';
 import { EXAM_30_FULL_QUESTIONS } from './exam30/exam30_full';
+import { EXAM_29_FULL_QUESTIONS } from './exam29/exam29_full';
+import { EXAM_28_FULL_QUESTIONS } from './exam28/exam28_full';
+import { EXAM_27_FULL_QUESTIONS } from './exam27/exam27_full';
+import { EXAM_26_FULL_QUESTIONS } from './exam26/exam26_full';
+import { EXAM_5_FULL_QUESTIONS } from './exam5/exam5_full';
+import { EXAM_2011_1_FULL_QUESTIONS } from './exam2011_1/exam2011_1_full';
+import { EXAM_2010_3_FULL_QUESTIONS } from './exam2010_3/exam2010_3_full';
 import { EXAM_2010_2_FULL_QUESTIONS } from './exam2010_2/exam2010_2_full';
+import { EXAM_2010_1_FULL_QUESTIONS } from './exam2010_1/exam2010_1_full';
 
 export interface AvailableExamInfo {
   id: string;
@@ -192,12 +200,84 @@ export const AVAILABLE_EXAMS: AvailableExamInfo[] = [
     isNew: true,
   },
   {
+    id: 'oab-29',
+    name: '29º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 29,
+    year: 2019,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 29º Exame da FGV (30/06/2019) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questões anuladas 20 e 34), base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-28',
+    name: '28º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 28,
+    year: 2019,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 28º Exame da FGV (17/03/2019) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo questão anulada 37 e retificação da 47), base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-27',
+    name: '27º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 27,
+    year: 2018,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 27º Exame da FGV (18/11/2018) Tipo 1 Branca com as 80 questões completas, gabarito definitivo oficial (incluindo retificação da questão 1 de B para A e anulação da questão 41), base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-26',
+    name: '26º Exame de Ordem Unificado (Tipo 1 - Branca)',
+    edition: 26,
+    year: 2018,
+    totalQuestions: 80,
+    description: 'Caderno oficial do 26º Exame da FGV (05/08/2018) Tipo 1 Branca com todas as 80 questões completas, gabarito definitivo oficial (sem anulações), base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-05',
+    name: 'V Exame de Ordem Unificado (2011.2 - Tipo 1 Branca)',
+    edition: 5,
+    year: 2011,
+    totalQuestions: 80,
+    description: 'Quinto Exame de Ordem Unificado aplicado pela FGV em 30/10/2011 (Caderno Tipo 1 Branca), com as 80 questões completas, gabarito definitivo oficial (incluindo questão anulada 27), base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-04',
+    name: 'IV Exame de Ordem Unificado (2011.1 - Tipo 1 Branca)',
+    edition: 4,
+    year: 2011,
+    totalQuestions: 80,
+    description: 'Quarto Exame de Ordem Unificado aplicado pela FGV em 17/07/2011 (primeiro no formato atual de 80 questões), gabarito definitivo oficial (incluindo questões anuladas 34, 64 e 79), base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-03',
+    name: 'III Exame de Ordem Unificado (2010.3 - Tipo 1 Branca)',
+    edition: 3,
+    year: 2011,
+    totalQuestions: 100,
+    description: 'Terceiro Exame de Ordem Unificado aplicado pela FGV em 14/02/2011, no formato histórico com 100 questões completas (incluindo questão anulada 94), gabarito oficial, base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
     id: 'oab-02',
     name: 'II Exame de Ordem Unificado (2010.2 - Tipo 1 Branca)',
     edition: 2,
     year: 2010,
     totalQuestions: 100,
     description: 'Primeiro Exame de Ordem Unificado aplicado pela FGV (26/09/2010), no formato histórico com 100 questões completas (incluindo questão anulada 13), gabarito oficial, base legal e comentários pedagógicos.',
+    isNew: true,
+  },
+  {
+    id: 'oab-01',
+    name: 'I Exame de Ordem Unificado (2010.1 - Cespe/UnB Afonso Arinos)',
+    edition: 1,
+    year: 2010,
+    totalQuestions: 100,
+    description: 'Exame de Ordem Unificado 2010.1 aplicado pelo Cespe/UnB em 13/06/2010 (Caderno Afonso Arinos), no formato histórico com 100 questões completas (incluindo questões anuladas 2, 11, 24, 31 e 33), gabarito definitivo oficial, base legal e comentários pedagógicos.',
     isNew: true,
   },
 ];
@@ -254,7 +334,31 @@ export const getExamQuestions = (examId: string): Question[] => {
   if (examId === 'oab-30' || examId.includes('30')) {
     return EXAM_30_FULL_QUESTIONS;
   }
-  if (examId === 'oab-02' || examId.includes('2010')) {
+  if (examId === 'oab-29' || examId.includes('29')) {
+    return EXAM_29_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-28' || examId.includes('28')) {
+    return EXAM_28_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-27' || examId.includes('27')) {
+    return EXAM_27_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-26' || examId.includes('26')) {
+    return EXAM_26_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-05' || examId.includes('2011.2') || examId.includes('2011_2')) {
+    return EXAM_5_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-04' || examId.includes('2011.1') || examId.includes('2011_1') || examId === '2011') {
+    return EXAM_2011_1_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-03' || examId.includes('2010.3') || examId.includes('2010_3')) {
+    return EXAM_2010_3_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-01' || examId.includes('2010.1') || examId.includes('2010_1')) {
+    return EXAM_2010_1_FULL_QUESTIONS;
+  }
+  if (examId === 'oab-02' || examId.includes('2010.2') || examId.includes('2010_2') || examId.includes('2010')) {
     return EXAM_2010_2_FULL_QUESTIONS;
   }
   return FULL_MOCK_EXAM_80;
@@ -279,7 +383,15 @@ export const getAllQuestions = (): Question[] => {
     ...EXAM_32_FULL_QUESTIONS,
     ...EXAM_31_FULL_QUESTIONS,
     ...EXAM_30_FULL_QUESTIONS,
+    ...EXAM_29_FULL_QUESTIONS,
+    ...EXAM_28_FULL_QUESTIONS,
+    ...EXAM_27_FULL_QUESTIONS,
+    ...EXAM_26_FULL_QUESTIONS,
+    ...EXAM_5_FULL_QUESTIONS,
+    ...EXAM_2011_1_FULL_QUESTIONS,
+    ...EXAM_2010_3_FULL_QUESTIONS,
     ...EXAM_2010_2_FULL_QUESTIONS,
+    ...EXAM_2010_1_FULL_QUESTIONS,
     ...FULL_MOCK_EXAM_80,
   ];
 };
@@ -312,7 +424,15 @@ export const findQuestionByIdAnyExam = (id: number): Question | undefined => {
     EXAM_32_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_31_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_30_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_29_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_28_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_27_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_26_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_5_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_2011_1_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_2010_3_FULL_QUESTIONS.find((q) => q.id === id) ||
     EXAM_2010_2_FULL_QUESTIONS.find((q) => q.id === id) ||
+    EXAM_2010_1_FULL_QUESTIONS.find((q) => q.id === id) ||
     FULL_MOCK_EXAM_80.find((q) => q.id === id)
   );
 };

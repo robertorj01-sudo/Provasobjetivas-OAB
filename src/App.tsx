@@ -12,15 +12,22 @@ import { CommunityFeedView } from './components/CommunityFeedView';
 import { PublicProfileView } from './components/PublicProfileView';
 import { EditProfileModal } from './components/EditProfileModal';
 import { CommunityProvider, useCommunity } from './context/CommunityContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { SharedRevisionList } from './types/community';
 import { EXAM_47_FULL_QUESTIONS } from './data/exam47/exam47_full';
 import { getExamQuestions, getAllQuestions, AVAILABLE_EXAMS } from './data/examsRegistry';
 import { Question, OptionLetter, SimuladoMode, SimuladoResult, DisciplineType } from './types/oab';
 import { apiService } from './services/api';
+import {
+  loadExamStateFromFirestore,
+  loadUserBookmarksFromFirestore,
+  saveExamStateToFirestore,
+  toggleBookmarkInFirestore,
+} from './services/firestoreService';
 import { AlertTriangle } from 'lucide-react';
 
 function JurisTantumApp() {
-  const { recordCompletedSimulado, setFeedFilterDiscipline } = useCommunity();
+  const { authUser, recordCompletedSimulado, setFeedFilterDiscipline } = useCommunity();
 
   const [activeTab, setActiveTab] = useState<MainTabId>('simulado');
   const [mode, setMode] = useState<SimuladoMode>('real');
@@ -89,6 +96,63 @@ function JurisTantumApp() {
     } catch {}
   }, [bookmarkedQuestions]);
 
+  // Load Firestore bookmarks & active exam state when user signs in or switches exam
+  useEffect(() => {
+    if (!authUser) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const remoteBookmarks = await loadUserBookmarksFromFirestore(authUser.uid);
+        if (!cancelled && Object.keys(remoteBookmarks).length > 0) {
+          setBookmarkedQuestions((prev) => ({ ...prev, ...remoteBookmarks }));
+        }
+      } catch (err) {
+        console.error('Erro ao carregar favoritos do Firestore:', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [authUser]);
+
+  useEffect(() => {
+    if (!authUser) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const saved = await loadExamStateFromFirestore(authUser.uid, activeExamId);
+        if (!cancelled && saved) {
+          setUserAnswers(saved.answers);
+          setFlaggedQuestions(saved.flaggedQuestions);
+          setTimeRemainingSeconds(saved.timeRemainingSeconds);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar estado da prova do Firestore:', err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [authUser, activeExamId]);
+
+  // Debounced sync of active exam answers/flags to Firestore when signed in
+  useEffect(() => {
+    if (!authUser) return;
+    const timer = setTimeout(() => {
+      if (Object.keys(userAnswers).length === 0 && Object.keys(flaggedQuestions).length === 0) {
+        return;
+      }
+      void saveExamStateToFirestore(
+        authUser.uid,
+        activeExamId,
+        userAnswers,
+        flaggedQuestions,
+        timeRemainingSeconds
+      );
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [authUser, activeExamId, userAnswers, flaggedQuestions]);
+
   // Timer countdown in 'real' mode
   useEffect(() => {
     if (mode !== 'real' || isFinished || isPaused) return;
@@ -134,10 +198,14 @@ function JurisTantumApp() {
     const targetId = id || activeQuestions[currentIndex]?.id;
     if (!targetId) return;
 
+    const nextValue = !bookmarkedQuestions[targetId];
     setBookmarkedQuestions((prev) => ({
       ...prev,
-      [targetId]: !prev[targetId],
+      [targetId]: nextValue,
     }));
+    if (authUser) {
+      void toggleBookmarkInFirestore(authUser.uid, targetId, nextValue);
+    }
   };
 
   // Finish exam and compute score
@@ -182,7 +250,14 @@ function JurisTantumApp() {
   // Start specific exam from catalog
   const handleStartExamFromCatalog = (examName: string, examId?: string) => {
     const matchedExam = AVAILABLE_EXAMS.find(
-      (e) => (e.id === 'oab-02' && examName.includes('2010.2')) || examName.includes(String(e.edition))
+      (e) =>
+        (examId && e.id === examId) ||
+        (e.id === 'oab-05' && examName.includes('2011.2')) ||
+        (e.id === 'oab-04' && examName.includes('2011.1')) ||
+        (e.id === 'oab-03' && examName.includes('2010.3')) ||
+        (e.id === 'oab-02' && examName.includes('2010.2')) ||
+        (e.id === 'oab-01' && examName.includes('2010.1')) ||
+        examName.includes(`${e.edition}º`)
     );
     const resolvedId = examId || matchedExam?.id || 'oab-41';
     setActiveExamId(resolvedId);
@@ -344,7 +419,7 @@ function JurisTantumApp() {
                     {examTitle}
                   </h1>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Banca FGV • {activeQuestions.length} Questões com 4 Alternativas (A, B, C, D) • Corte: {passingCutoff} Acertos (50%)
+                    {activeExamId === 'oab-01' ? 'Banca Cespe/UnB' : 'Banca FGV'} • {activeQuestions.length} Questões com 4 Alternativas (A, B, C, D) • Corte: {passingCutoff} Acertos (50%)
                   </p>
                 </div>
 
@@ -367,7 +442,7 @@ function JurisTantumApp() {
                             : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
-                        {exam.id === 'oab-02' ? '2010.2 (II)' : `${exam.edition}º Exame`}
+                        {exam.id === 'oab-05' ? '2011.2 (V)' : exam.id === 'oab-04' ? '2011.1 (IV)' : exam.id === 'oab-03' ? '2010.3 (III)' : exam.id === 'oab-02' ? '2010.2 (II)' : exam.id === 'oab-01' ? '2010.1 (Cespe)' : `${exam.edition}º Exame`}
                       </button>
                     ))}
                   </div>
@@ -457,9 +532,12 @@ function JurisTantumApp() {
         {activeTab === 'comunidade' && (
           <CommunityFeedView
             onOpenQuestion={handleOpenQuestionById}
-            onSyncBookmarkQuestion={(qId) =>
-              setBookmarkedQuestions((prev) => ({ ...prev, [qId]: true }))
-            }
+            onSyncBookmarkQuestion={(qId) => {
+              setBookmarkedQuestions((prev) => ({ ...prev, [qId]: true }));
+              if (authUser) {
+                void toggleBookmarkInFirestore(authUser.uid, qId, true);
+              }
+            }}
           />
         )}
 
@@ -537,8 +615,10 @@ function JurisTantumApp() {
 
 export default function App() {
   return (
-    <CommunityProvider>
-      <JurisTantumApp />
-    </CommunityProvider>
+    <ErrorBoundary>
+      <CommunityProvider>
+        <JurisTantumApp />
+      </CommunityProvider>
+    </ErrorBoundary>
   );
 }

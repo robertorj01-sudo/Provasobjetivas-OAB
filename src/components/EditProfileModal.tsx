@@ -4,6 +4,11 @@ import { useCommunity } from '../context/CommunityContext';
 import { CoverTheme, UserCategory } from '../types/community';
 import { DisciplineType } from '../types/oab';
 import { UserAvatar } from './UserIdentity';
+import {
+  BLUEPRINT_LIMITS,
+  compressAvatarImageFile,
+  sanitizeHandle,
+} from '../utils/firestorePayload';
 
 const ALL_SPECIALTIES: DisciplineType[] = [
   'Ética Profissional',
@@ -85,21 +90,20 @@ export function EditProfileModal() {
     );
   };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setAvatarUrl(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressAvatarImageFile(file);
+      setAvatarUrl(compressed);
+    } catch (err) {
+      console.error('Erro ao comprimir avatar:', err);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanedHandle = handle.replace(/^@+/, '').trim() || 'usuario.oab';
+    const cleanedHandle = sanitizeHandle(handle, currentUser.id);
     const computedRole =
       roleTitle.trim() ||
       (category === 'advogado'
@@ -204,6 +208,7 @@ export function EditProfileModal() {
               <input
                 type="text"
                 required
+                maxLength={BLUEPRINT_LIMITS.nameMax}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-600"
@@ -218,8 +223,11 @@ export function EditProfileModal() {
                 <input
                   type="text"
                   required
+                  maxLength={BLUEPRINT_LIMITS.handleMax}
                   value={handle}
-                  onChange={(e) => setHandle(e.target.value.replace(/\s+/g, '.').toLowerCase())}
+                  onChange={(e) =>
+                    setHandle(e.target.value.replace(/\s+/g, '.').replace(/[^a-zA-Z0-9._\-]/g, '').toLowerCase())
+                  }
                   className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/25 focus:border-amber-600"
                 />
               </div>
@@ -373,6 +381,7 @@ export function EditProfileModal() {
               </label>
               <input
                 type="text"
+                maxLength={BLUEPRINT_LIMITS.roleTitleMax}
                 value={roleTitle}
                 onChange={(e) => setRoleTitle(e.target.value)}
                 placeholder="Ex: Bacharel em Direito · Foco em Direito Tributário"
@@ -386,6 +395,7 @@ export function EditProfileModal() {
               </label>
               <textarea
                 rows={3}
+                maxLength={BLUEPRINT_LIMITS.bioMax}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Descreva sua trajetória acadêmica, áreas de interesse e objetivos no Exame de Ordem..."

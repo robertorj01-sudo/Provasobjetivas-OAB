@@ -19,12 +19,14 @@ import {
   UserPlus,
   Users,
   X,
+  LogIn,
 } from 'lucide-react';
 import { useCommunity } from '../context/CommunityContext';
 import { DisciplineType } from '../types/oab';
 import { FeedPostType } from '../types/community';
 import { UserAvatar, CategoryBadge } from './UserIdentity';
 import { formatRelativeDate, renderFormattedLegalText } from '../utils/legalTextFormatter';
+import { BLUEPRINT_LIMITS } from '../utils/firestorePayload';
 
 interface CommunityFeedViewProps {
   onOpenQuestion: (questionId: number) => void;
@@ -49,6 +51,9 @@ export function CommunityFeedView({
   onSyncBookmarkQuestion,
 }: CommunityFeedViewProps) {
   const {
+    isAuthenticated,
+    authBusy,
+    signInWithGoogle,
     profiles,
     currentUser,
     feedPosts,
@@ -317,6 +322,17 @@ export function CommunityFeedView({
                   Editar
                 </button>
               </div>
+              {!isAuthenticated && (
+                <button
+                  type="button"
+                  disabled={authBusy}
+                  onClick={() => void signInWithGoogle()}
+                  className="mt-2.5 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-xs font-bold transition-colors cursor-pointer"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>{authBusy ? 'Conectando...' : 'Entrar com Google (Nuvem)'}</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -416,6 +432,7 @@ export function CommunityFeedView({
               <input
                 type="text"
                 required
+                maxLength={BLUEPRINT_LIMITS.postTitleMax}
                 value={postTitle}
                 onChange={(e) => setPostTitle(e.target.value)}
                 placeholder="Título do Artigo Jurídico (ex.: Análise das Excludentes de Ilicitude na FGV)"
@@ -431,6 +448,7 @@ export function CommunityFeedView({
               />
               <textarea
                 ref={composerRef}
+                maxLength={BLUEPRINT_LIMITS.postContentMax}
                 value={postContent}
                 onChange={(e) => setPostContent(e.target.value)}
                 rows={composerMode === 'artigo' ? 5 : 3}

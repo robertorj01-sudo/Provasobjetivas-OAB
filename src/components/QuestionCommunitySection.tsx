@@ -21,6 +21,7 @@ import { Question } from '../types/oab';
 import { useCommunity } from '../context/CommunityContext';
 import { UserAvatar, CategoryBadge } from './UserIdentity';
 import { formatRelativeDate, renderFormattedLegalText } from '../utils/legalTextFormatter';
+import { BLUEPRINT_LIMITS } from '../utils/firestorePayload';
 
 interface QuestionCommunitySectionProps {
   question: Question;
@@ -223,6 +224,7 @@ export function QuestionCommunitySection({
           </p>
           <textarea
             value={shareNote}
+            maxLength={BLUEPRINT_LIMITS.postContentMax}
             onChange={(e) => setShareNote(e.target.value)}
             rows={3}
             placeholder="Escreva sua dúvida doutrinária, macete de prova ou pedido de ajuda sobre esta questão..."
@@ -299,6 +301,7 @@ export function QuestionCommunitySection({
                 <textarea
                   ref={commentInputRef}
                   value={commentText}
+                  maxLength={BLUEPRINT_LIMITS.questionCommentMax}
                   onChange={(e) => setCommentText(e.target.value)}
                   rows={3}
                   placeholder="Escreva seu comentário fundamentado explicando o gabarito, artigos de lei ou súmulas aplicáveis..."
@@ -457,6 +460,7 @@ export function QuestionCommunitySection({
                         <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-2">
                           <textarea
                             value={replyText}
+                            maxLength={BLUEPRINT_LIMITS.questionReplyMax}
                             onChange={(e) => setReplyText(e.target.value)}
                             rows={2}
                             placeholder={`Responder a ${author.name}...`}

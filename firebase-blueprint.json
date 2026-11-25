@@ -1,0 +1,738 @@
+{
+  "entities": {
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Private user account root containing PII (email) and session metadata, strictly restricted to the owning user.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "minLength": 3,
+          "maxLength": 320
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "email", "displayName", "createdAt", "updatedAt"]
+    },
+    "UserBookmark": {
+      "title": "UserBookmark",
+      "description": "Private bookmarked question entry in the user's Caderno de Revisao.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "questionId": {
+          "type": "integer",
+          "description": "Numeric question identifier from the OAB/FGV exam bank."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "questionId", "createdAt"]
+    },
+    "UserExamState": {
+      "title": "UserExamState",
+      "description": "Private per-exam simulado state including selected answers, flagged question IDs, and remaining countdown seconds.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "examId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "answers": {
+          "type": "object",
+          "description": "Map of question ID string to selected option letter (A, B, C, or D)."
+        },
+        "flaggedIds": {
+          "type": "array",
+          "description": "Bounded list of flagged question IDs (max 120)."
+        },
+        "timeRemainingSeconds": {
+          "type": "integer",
+          "description": "Remaining countdown time in seconds (0 to 18000)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "examId", "answers", "flaggedIds", "timeRemainingSeconds", "updatedAt"]
+    },
+    "SimuladoAttempt": {
+      "title": "SimuladoAttempt",
+      "description": "Immutable record of a completed official OAB simulado attempt by the user.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "examId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "examTitle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "totalQuestions": {
+          "type": "integer"
+        },
+        "correctCount": {
+          "type": "integer"
+        },
+        "wrongCount": {
+          "type": "integer"
+        },
+        "unansweredCount": {
+          "type": "integer"
+        },
+        "percentage": {
+          "type": "number"
+        },
+        "isApproved": {
+          "type": "boolean"
+        },
+        "timeSpentSeconds": {
+          "type": "integer"
+        },
+        "disciplineScores": {
+          "type": "array"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "examId",
+        "examTitle",
+        "totalQuestions",
+        "correctCount",
+        "wrongCount",
+        "unansweredCount",
+        "percentage",
+        "isApproved",
+        "timeSpentSeconds",
+        "disciplineScores",
+        "createdAt"
+      ]
+    },
+    "UserReaction": {
+      "title": "UserReaction",
+      "description": "Private index of the authenticated user's own post likes, post saves, and question comment upvotes.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["post_like", "post_save", "comment_upvote"]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "kind", "targetId", "createdAt"]
+    },
+    "UserNotification": {
+      "title": "UserNotification",
+      "description": "Community activity notification delivered to a user's private inbox.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "recipientId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["upvote", "reply", "follow", "like", "comment"]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "targetQuestionId": {
+          "type": "integer"
+        },
+        "targetPostId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "recipientId", "actorId", "type", "text", "read", "createdAt"]
+    },
+    "PublicProfile": {
+      "title": "PublicProfile",
+      "description": "Public juridical community profile with zero PII (no email/phone/address).",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 50,
+          "pattern": "^[a-zA-Z0-9._\\-]+$"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "coverTheme": {
+          "type": "string",
+          "enum": ["navy", "slate", "amber", "emerald"]
+        },
+        "roleTitle": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "bio": {
+          "type": "string",
+          "maxLength": 1200
+        },
+        "category": {
+          "type": "string",
+          "enum": ["estudante", "examinando", "advogado"]
+        },
+        "institution": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "semester": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "targetExam": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "oabNumber": {
+          "type": "string",
+          "maxLength": 30
+        },
+        "oabUf": {
+          "type": "string",
+          "maxLength": 4
+        },
+        "isVerified": {
+          "type": "boolean"
+        },
+        "specialties": {
+          "type": "array"
+        },
+        "followersCount": {
+          "type": "integer"
+        },
+        "followingCount": {
+          "type": "integer"
+        },
+        "reputationPoints": {
+          "type": "integer"
+        },
+        "completedSimulados": {
+          "type": "integer"
+        },
+        "achievements": {
+          "type": "array"
+        },
+        "showPerformanceShowcase": {
+          "type": "boolean"
+        },
+        "performanceByDiscipline": {
+          "type": "array"
+        },
+        "sharedLists": {
+          "type": "array"
+        },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "isPublic",
+        "name",
+        "handle",
+        "coverTheme",
+        "roleTitle",
+        "bio",
+        "category",
+        "isVerified",
+        "specialties",
+        "followersCount",
+        "followingCount",
+        "reputationPoints",
+        "completedSimulados",
+        "achievements",
+        "showPerformanceShowcase",
+        "performanceByDiscipline",
+        "sharedLists",
+        "joinedAt",
+        "updatedAt"
+      ]
+    },
+    "FollowRelation": {
+      "title": "FollowRelation",
+      "description": "Directional follow relationship document keyed by {followerId}_{followingId}.",
+      "type": "object",
+      "properties": {
+        "followerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "followingId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "isPublic": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["followerId", "followingId", "isPublic", "createdAt"]
+    },
+    "FeedPost": {
+      "title": "FeedPost",
+      "description": "Community feed publication, legal article, or shared OAB question.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"]
+        },
+        "type": {
+          "type": "string",
+          "enum": ["post", "artigo", "questao_compartilhada"]
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "tags": {
+          "type": "array"
+        },
+        "sharedQuestion": {
+          "type": "object"
+        },
+        "likesCount": {
+          "type": "integer"
+        },
+        "savesCount": {
+          "type": "integer"
+        },
+        "commentsCount": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "visibility",
+        "type",
+        "authorId",
+        "content",
+        "tags",
+        "likesCount",
+        "savesCount",
+        "commentsCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PostLike": {
+      "title": "PostLike",
+      "description": "Unique like/recommendation marker under a FeedPost.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "postId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "postId", "createdAt"]
+    },
+    "PostSave": {
+      "title": "PostSave",
+      "description": "Unique save marker under a FeedPost.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "postId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "postId", "createdAt"]
+    },
+    "FeedPostComment": {
+      "title": "FeedPostComment",
+      "description": "Comment on a community FeedPost.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "postId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "postId", "authorId", "visibility", "content", "createdAt"]
+    },
+    "QuestionComment": {
+      "title": "QuestionComment",
+      "description": "Community commentary / legal rationale posted under a specific OAB exam question.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "questionId": {
+          "type": "integer"
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "upvotesCount": {
+          "type": "integer"
+        },
+        "repliesCount": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "questionId",
+        "authorId",
+        "visibility",
+        "content",
+        "upvotesCount",
+        "repliesCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "QuestionCommentUpvote": {
+      "title": "QuestionCommentUpvote",
+      "description": "Unique upvote marker under a QuestionComment.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "commentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["userId", "commentId", "createdAt"]
+    },
+    "QuestionCommentReply": {
+      "title": "QuestionCommentReply",
+      "description": "Threaded reply under a QuestionComment.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "commentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public"]
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "commentId", "authorId", "visibility", "content", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserAccount" },
+      "description": "Private user account metadata with PII strictly owned by userId."
+    },
+    "/users/{userId}/bookmarks/{questionId}": {
+      "schema": { "$ref": "#/entities/UserBookmark" },
+      "description": "Private user bookmarks in Caderno de Revisao."
+    },
+    "/users/{userId}/examStates/{examId}": {
+      "schema": { "$ref": "#/entities/UserExamState" },
+      "description": "Private saved exam answers, flags, and countdown per exam."
+    },
+    "/users/{userId}/simuladoHistory/{attemptId}": {
+      "schema": { "$ref": "#/entities/SimuladoAttempt" },
+      "description": "Private history of completed simulados."
+    },
+    "/users/{userId}/reactions/{reactionId}": {
+      "schema": { "$ref": "#/entities/UserReaction" },
+      "description": "Private index of the user's likes, saves, and upvotes."
+    },
+    "/users/{userId}/notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/UserNotification" },
+      "description": "User's private notification inbox."
+    },
+    "/publicProfiles/{userId}": {
+      "schema": { "$ref": "#/entities/PublicProfile" },
+      "description": "Public juridical profiles visible to verified community members."
+    },
+    "/follows/{followId}": {
+      "schema": { "$ref": "#/entities/FollowRelation" },
+      "description": "Directional follow relationships keyed as {followerId}_{followingId}."
+    },
+    "/feedPosts/{postId}": {
+      "schema": { "$ref": "#/entities/FeedPost" },
+      "description": "Community feed publications, articles, and shared OAB questions."
+    },
+    "/feedPosts/{postId}/likes/{userId}": {
+      "schema": { "$ref": "#/entities/PostLike" },
+      "description": "Per-user like markers for a feed post."
+    },
+    "/feedPosts/{postId}/saves/{userId}": {
+      "schema": { "$ref": "#/entities/PostSave" },
+      "description": "Per-user save markers for a feed post."
+    },
+    "/feedPosts/{postId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/FeedPostComment" },
+      "description": "Comments under a feed post."
+    },
+    "/questionComments/{commentId}": {
+      "schema": { "$ref": "#/entities/QuestionComment" },
+      "description": "Community comments on OAB exam questions."
+    },
+    "/questionComments/{commentId}/upvotes/{userId}": {
+      "schema": { "$ref": "#/entities/QuestionCommentUpvote" },
+      "description": "Per-user upvote markers on question comments."
+    },
+    "/questionComments/{commentId}/replies/{replyId}": {
+      "schema": { "$ref": "#/entities/QuestionCommentReply" },
+      "description": "Threaded replies on question comments."
+    }
+  }
+}

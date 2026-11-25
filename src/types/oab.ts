@@ -72,7 +72,7 @@ export interface ExamMetadata {
   name: string;
   year: number;
   phase: 1;
-  banca: 'FGV';
+  banca: 'FGV' | 'Cespe/UnB';
   totalQuestions: number;
   passingScore: number;
   officialDate: string;
